@@ -48,11 +48,11 @@ s([[X, Y|Carga], Extintores, Incendios], [[X1, Y|Carga], Extintores, Incendios])
 % SALTOS: continua dentro do prédio, tem entulho na posição adjacente, não tem nenhum objeto na posição seguinte. 
 % Salto à direita
 s([[X, Y|Carga], Extintores, Incendios], [[X1, Y|Carga], Extintores, Incendios]) :- X1 is X + 2, X2 is X + 1, dentro_predio([X1, Y]), ocupado_com([X2, Y], entulho),
-not(ocupado_com([X1, Y], _)), not(tem_fogo([X1, Y], Incendios)), not(tem_extintor([X1, Y], Extintores)).
+not(ocupado_com([X1, Y], _)), not(tem_fogo([X1, Y], Incendios)), not(tem_extintor([X1, Y], Extintores)), not(ocupado_com([X1, Y - 1], escada)).
 
 % Salto à esquerda
 s([[X, Y|Carga], Extintores, Incendios], [[X1, Y|Carga], Extintores, Incendios]) :- X1 is X - 2, X2 is X - 1, dentro_predio([X1, Y]), ocupado_com([X2, Y], entulho),
-not(ocupado_com([X1, Y], _)), not(tem_fogo([X1, Y], Incendios)), not(tem_extintor([X1, Y], Extintores)).
+not(ocupado_com([X1, Y], _)), not(tem_fogo([X1, Y], Incendios)), not(tem_extintor([X1, Y], Extintores)), not(ocupado_com([X1, Y - 1], escada)).
 
 
 % VERTICAL: continua dentro do prédio, existe uma escada na posição desejada (em [X, Y] para subir e em [X, Y - 1] para descer).
