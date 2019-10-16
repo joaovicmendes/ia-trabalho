@@ -1,5 +1,5 @@
 % Definindo tamanho do prédio
-% solucao_bl([[1, 1, 0],[[2, 1]],[[10, 1]]], S).
+% Teste do ambiente 1: solucao_bl([[1, 1, 0],[[2, 3]],[[9, 1], [10, 5]]], S).
 % tam_predio([10, 5]).
 dentro_predio([X, Y|_]) :- X > 0, Y > 0, X < 11, Y < 6.
 
@@ -67,7 +67,7 @@ meta([_, _, []]).
 
 % --- BFS ---
 % Solucao por busca em largura (bl)
-solucao_bl(Inicial, Solucao1) :- bl([[Inicial]], Solucao), limpa_sol(Solucao, Solucao1).
+solucao_bl(Inicial, SolucaoInv) :- bl([[Inicial]], Solucao), limpa_sol(Solucao, Solucao1), inverte(Solucao1, SolucaoInv).
 
 % 1. Se o primeiro estado de F for meta, então o retorna com o caminho
 bl([[Estado|Caminho]|_], [Estado|Caminho]) :- meta(Estado).
@@ -97,3 +97,6 @@ conta([ _|Cauda], N) :- conta(Cauda, N1), N is N1 + 1.
 
 limpa_sol([], []).
 limpa_sol([[Elem|_]|Cauda], [Elem|Cauda1]) :- limpa_sol(Cauda, Cauda1).
+
+inverte([], []).
+inverte([Elem|Cauda], Inv) :- inverte(Cauda, Cauda1), concatena(Cauda1, [Elem], Inv).
