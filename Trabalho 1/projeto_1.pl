@@ -1,6 +1,7 @@
 % Definindo tamanho do prédio
+% solucao_bl([[1, 1, 0],[[2, 1]],[[10, 1]]], S).
 % tam_predio([10, 5]).
-dentro_predio([X, Y|_]) :- X > 0, Y > 0, X <= 10, Y <= 5.
+dentro_predio([X, Y|_]) :- X > 0, Y > 0, X < 11, Y < 6.
 
 % Mapeando paredes no ambiente
 ocupado_com([3, 3], parede).
@@ -23,26 +24,50 @@ ocupado_com([3, 4], escada).
 ocupado_com([5, 4], escada).
 ocupado_com([9, 4], escada).
 
-% Estado = [[X, Y, Cargas], Extintores, Incendios]
+% Verificando se existe fogo ou extintor
+tem_fogo(Coordenada, Incendios) :- pertence(Coordenada, Incendios).
+
+tem_extintor(Coordenada, Extintores) :- pertence(Coordenada, Extintores).
+
+% Transições de estado
+% Estado = [[X, Y, Carga], Extintores, Incendios]
+
+% Movimento horizontal à direita
+s([[X, Y|Carga], Extintores, Incendios], [[X1, Y|Carga], Extintores, Incendios]) :- X1 is X + 1, dentro_predio([X1, Y]), not(ocupado_com([X1, Y], parede)), not(ocupado_com([X1, Y], entulho)), not(tem_fogo([X1, Y], Incendios)).
+
+% Movimento horizontal à esquerda
+s([[X, Y|Carga], Extintores, Incendios], [[X1, Y|Carga], Extintores, Incendios]) :- X1 is X - 1, dentro_predio([X1, Y]), not(ocupado_com([X1, Y], parede)), not(ocupado_com([X1, Y], entulho)), not(tem_fogo([X1, Y], Incendios)).
+
+% Salto à direita
+s([[X, Y|Carga], Extintores, Incendios], [[X1, Y|Carga], Extintores, Incendios]) :- X1 is X + 2, X2 is X + 1, dentro_predio([X1, Y]), ocupado_com([X2, Y], entulho),
+not(ocupado_com([X1, Y], _)), not(tem_fogo(Incendios, [X1, Y])), not(tem_extintor([X1, Y], Extintores)).
+
+% Salto à esquerda
+s([[X, Y|Carga], Extintores, Incendios], [[X1, Y|Carga], Extintores, Incendios]) :- X1 is X - 2, X2 is X - 1, dentro_predio([X1, Y]), ocupado_com([X2, Y], entulho),
+not(ocupado_com([X1, Y], _)), not(tem_fogo(Incendios, [X1, Y])), not(tem_extintor([X1, Y], Extintores)).
+
+% Movimento vertical para cima
+s([[X, Y|Carga], Extintores, Incendios], [[X, Y1|Carga], Extintores, Incendios]) :- Y1 is Y + 1, dentro_predio([X, Y1]), ocupado_com([X, Y], escada).
+
+% Movimento vertical para baixo
+s([[X, Y|Carga], Extintores, Incendios], [[X, Y1|Carga], Extintores, Incendios]) :- Y1 is Y - 1, dentro_predio([X, Y1]), ocupado_com([X, Y1], escada).
+
+% Pega extintor
+s([[X, Y, Carga|Cauda], Extintores, Incendios], [[X, Y, Carga1|Cauda], Extintores1, Incendios]) :- Carga == 0, tem_extintor([X, Y], Extintores), retirar_elemento([X, Y], Extintores, Extintores1), Carga1 is Carga + 2.
+
+% Apaga Incêndio à direita
+s([[X, Y, Carga|Cauda], Extintores, Incendios], [[X, Y, Carga1|Cauda], Extintores, Incendios1]) :- Carga > 0, X1 is X + 1, tem_fogo([X1, Y], Incendios), retirar_elemento([X1, Y], Incendios, Incendios1), Carga1 is Carga - 1.
+
+% Apaga Incêndio à esquerda
+s([[X, Y, Carga|Cauda], Extintores, Incendios], [[X, Y, Carga1|Cauda], Extintores, Incendios1]) :- Carga > 0, X1 is X - 1, tem_fogo([X1, Y], Incendios), retirar_elemento([X1, Y], Incendios, Incendios1), Carga1 is Carga - 1.
+
+% Definindo meta(Estado)
 % Estado é meta se lista de incendios == []
-meta([_, _, []|_]).
-
-% mov_hor_dir: se for ficar dentro do prédio e not(ocupado_com([X + 1, Y], parede); ocupado_com([X + 1, Y], entulho))
-% mov_hor_esq: se for ficar dentro do prédio e not(ocupado_com([X - 1, Y], parede); ocupado_com([X - 1, Y], entulho))
-
-% salto_dir: se for ficar dentro do prédio e ocupado([X + 1, Y], entulho) not(ocupado_com([X + 2, Y], _); tem_fogo(Incendios, [X + 2, Y]))
-% salto_esq se for ficar dentro do prédio e ocupado([X - 1, Y], entulho) not(ocupado_com([X - 2, Y], _); tem_fogo(Incendios, [X - 2, Y]))
-
-% mov_ver_sobe: se for ficar dentro do prédio e ocupado([X, Y], escada)
-% mov_ver_desce: se for ficar dentro do prédio e ocupado([X, Y - 1], escada)
-
-% pega_extintor: se cargas == 0 e tem_extintor(Extintores, [X, Y])
-% apaga_incendio: se cargas > 0 e tem_fogo(Incendios, [X, Y])
-
+meta([_, _, []]).
 
 % --- BFS ---
 % Solucao por busca em largura (bl)
-solucao_bl(Inicial, Solucao) :- bl([[Inicial]], Solucao).
+solucao_bl(Inicial, Solucao1) :- bl([[Inicial]], Solucao), limpa_sol(Solucao, Solucao1).
 
 % 1. Se o primeiro estado de F for meta, então o retorna com o caminho
 bl([[Estado|Caminho]|_], [Estado|Caminho]) :- meta(Estado).
@@ -69,3 +94,6 @@ concatena([Cab|Cauda], L2, [Cab|Resultado]) :- concatena(Cauda, L2, Resultado).
 
 conta([ ],0).
 conta([ _|Cauda], N) :- conta(Cauda, N1), N is N1 + 1.
+
+limpa_sol([], []).
+limpa_sol([[Elem|_]|Cauda], [Elem|Cauda1]) :- limpa_sol(Cauda, Cauda1).
