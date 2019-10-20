@@ -2,10 +2,10 @@
 % Estado = [Bombeiro, Extintores, Incendios]
 % Estado = [[X, Y, Carga], Extintores, Incendios]
 
-% --- Transições de estado ---
-% HORIZONTAL: continua dentro do prédio, não existe uma parede, entulho ou fogo na posição desejada.
+% --- Condições para transição de estado ---
+% MOV. HORIZONTAL: continua dentro do prédio, não existe uma parede, entulho ou fogo na posição desejada.
 % SALTOS: continua dentro do prédio, tem entulho na posição adjacente, não tem nenhum objeto na posição seguinte. 
-% VERTICAL: continua dentro do prédio, existe uma escada na posição desejada (em [X, Y] para subir e em [X, Y - 1] para descer).
+% MOV. VERTICAL: continua dentro do prédio, existe uma escada na posição desejada (em [X, Y] para subir e em [X, Y - 1] para descer).
 % PEGA EXTINTOR: se a carga esta vazia e tem extintor na posição atual
 % APAGAR INCENDIO: se tem carga, e existe fogo na posição adjacente
 
@@ -85,8 +85,8 @@ meta([_, _, []]).
 
 
 % --- Funções auxiliares para manipulação de listas ---
-pertence(Elem,[Elem|_ ]).
-pertence(Elem,[ _| Cauda]) :- pertence(Elem,Cauda).
+pertence(Elem, [Elem|_]).
+pertence(Elem, [_| Cauda]) :- pertence(Elem, Cauda).
 
 retirar_elemento(Elem, [Elem|Cauda], Cauda).
 retirar_elemento(Elem, [Elem1|Cauda], [Elem1|Cauda1]) :- retirar_elemento(Elem, Cauda, Cauda1).
@@ -94,8 +94,8 @@ retirar_elemento(Elem, [Elem1|Cauda], [Elem1|Cauda1]) :- retirar_elemento(Elem, 
 concatena([], L, L).
 concatena([Cab|Cauda], L2, [Cab|Resultado]) :- concatena(Cauda, L2, Resultado).
 
-conta([ ],0).
-conta([ _|Cauda], N) :- conta(Cauda, N1), N is N1 + 1.
+conta([], 0).
+conta([_|Cauda], N) :- conta(Cauda, N1), N is N1 + 1.
 
 inverte([], []).
 inverte([Elem|Cauda], Inv) :- inverte(Cauda, Cauda1), concatena(Cauda1, [Elem], Inv).
@@ -107,17 +107,28 @@ limpa_sol([[Elem|_]|Cauda], [Elem|Cauda1]) :- limpa_sol(Cauda, Cauda1).
 
 % --- BFS ---
 % Solucao por busca em largura (bl)
-solucao_bl(Inicial, SolucaoInv) :- bl([[Inicial]], Solucao), limpa_sol(Solucao, Solucao1), inverte(Solucao1, SolucaoInv).
+solucao_bl(Inicial, SolucaoInv) :- 
+    bl([[Inicial]], Solucao), 
+    limpa_sol(Solucao, Solucao1), 
+    inverte(Solucao1, SolucaoInv).
 
 % 1. Se o primeiro estado de F for meta, então o retorna com o caminho
 bl([[Estado|Caminho]|_], [Estado|Caminho]) :- meta(Estado).
 
 % 2. Falha ao encontrar a meta, então estende o primeiro estado até seus 
 % sucessores e os coloca no final da lista de fronteira
-bl([Primeiro|Outros], Solucao) :- estende(Primeiro,Sucessores), concatena(Outros, Sucessores, NovaFronteira), bl(NovaFronteira, Solucao).
+bl([Primeiro|Outros], Solucao) :- 
+    estende(Primeiro, Sucessores), 
+    concatena(Outros, Sucessores, NovaFronteira), 
+    bl(NovaFronteira, Solucao).
 
 % 2.1. Metodo que faz a extensao do caminho até os nós filhos do estado
-estende([Estado|Caminho], ListaSucessores):- bagof([Sucessor, Estado|Caminho], (s(Estado, Sucessor), not(pertence(Sucessor, [Estado|Caminho]))), ListaSucessores), !.
+estende([Estado|Caminho], ListaSucessores):- 
+    bagof(
+        [Sucessor, Estado|Caminho], 
+        (s(Estado, Sucessor), not(pertence(Sucessor, [Estado|Caminho]))), 
+        ListaSucessores
+    ), !.
 
 % 2.2. Se o estado não tiver sucessor, falha e não procura mais (corte)
 estende( _ ,[]).
@@ -125,10 +136,16 @@ estende( _ ,[]).
 
 % --- DFS ---
 % Solucao por busca em profundidade (bp)
-solucao_bp(Inicial,SolucaoInv) :- bp([],Inicial,Solucao), limpa_sol(Solucao, Solucao1), inverte(Solucao1, SolucaoInv).
+solucao_bp(Inicial, SolucaoInv) :- 
+    bp([], Inicial, Solucao), 
+    limpa_sol(Solucao, Solucao1), 
+    inverte(Solucao1, SolucaoInv).
 
 % 1. Encontra a meta
-bp(Caminho,Estado,[Estado|Caminho]) :- meta(Estado).
+bp(Caminho, Estado, [Estado|Caminho]) :- meta(Estado).
 
 % 2. Senão, coloca o no caminho e continua a busca
-bp(Caminho,Estado,Solucao) :- s(Estado,Sucessor), not(pertence(Sucessor,Caminho)), bp([Estado|Caminho],Sucessor,Solucao).
+bp(Caminho, Estado, Solucao) :- 
+    s(Estado, Sucessor), 
+    not(pertence(Sucessor, Caminho)), 
+    bp([Estado|Caminho], Sucessor, Solucao).
