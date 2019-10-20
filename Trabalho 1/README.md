@@ -8,8 +8,9 @@ O grupo é composto pelos alunos:
 - [Luis Felipe Ortolan ()](https://github.com/LuisFelipeOrtolan)
 
 # Instruções
+- Vá para a pasta `src/` no terminal.
 - Executar o comando `swipl` no terminal.
-- Executar `? - [amb<num ambiente>, projeto].`, já dentro do prolog.
-- Executar `? - solucao_bl(<estado desejado>).`, já dentro do prolog.
+- Executar `?- [amb<num ambiente>, projeto].`, já dentro do prolog.
+- Executar `?- solucao_bl(<estado inicial>).`, já dentro do prolog.
 - Se a solução resultante for `false`, o programa não encontrou uma solução, se encontrou e acabou com `...`, basta apertar `w` para exibir a solução completa.
 - A solução final é uma lista contendo diversas listas na forma `[X, Y, Cargas]`, onde `X` e `Y` são a posição do bombeiro e `Cargas` é o número de cargas que ele possui naquele momento.
