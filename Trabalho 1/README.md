@@ -8,6 +8,7 @@ O grupo é composto pelos alunos:
 - [Luis Felipe Ortolan ()](https://github.com/LuisFelipeOrtolan)
 
 # Instruções
+- Vá para a pasta `src` no terminal.
 - Executar o comando `swipl` no terminal.
 - Executar `? - [amb<num ambiente>, projeto].`, já dentro do prolog.
 - Executar `? - solucao_bl(<estado desejado>).`, já dentro do prolog.
