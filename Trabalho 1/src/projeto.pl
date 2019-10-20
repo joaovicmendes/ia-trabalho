@@ -28,23 +28,23 @@ s([[X, Y|Carga], Extintores, Incendios], [[X1, Y|Carga], Extintores, Incendios])
 
 % Salto à direita
 s([[X, Y|Carga], Extintores, Incendios], [[X1, Y|Carga], Extintores, Incendios]) :- 
-    X1 is X + 2, X2 is X + 1, 
+    X1 is X + 2, X2 is X + 1, Y1 is Y - 1,
     dentro_predio([X1, Y]), 
     ocupado_com([X2, Y], entulho), 
     not(ocupado_com([X1, Y], _)), 
     not(pertence([X1, Y], Incendios)), 
     not(pertence([X1, Y], Extintores)), 
-    not(ocupado_com([X1, Y - 1], escada)).
+    not(ocupado_com([X1, Y1], escada)).
 
 % Salto à esquerda
 s([[X, Y|Carga], Extintores, Incendios], [[X1, Y|Carga], Extintores, Incendios]) :- 
-    X1 is X - 2, X2 is X - 1, 
+    X1 is X - 2, X2 is X - 1, Y1 is Y - 1,
     dentro_predio([X1, Y]), 
     ocupado_com([X2, Y], entulho),
     not(ocupado_com([X1, Y], _)), 
     not(pertence([X1, Y], Incendios)), 
     not(pertence([X1, Y], Extintores)), 
-    not(ocupado_com([X1, Y - 1], escada)).
+    not(ocupado_com([X1, Y1], escada)).
 
 % Movimento vertical para cima
 s([[X, Y|Carga], Extintores, Incendios], [[X, Y1|Carga], Extintores, Incendios]) :- 
