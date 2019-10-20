@@ -1,54 +1,88 @@
-% REGRAS GERAIS: que não dependem da modelagem do prédio
-
-% Verificando se existe fogo ou extintor
-tem_fogo(Coordenada, Incendios) :- pertence(Coordenada, Incendios).
-
-tem_extintor(Coordenada, Extintores) :- pertence(Coordenada, Extintores).
-
+% Estado:
+% Estado = [Bombeiro, Extintores, Incendios]
 % Estado = [[X, Y, Carga], Extintores, Incendios]
-% Transições de estado:
 
+% --- Transições de estado ---
 % HORIZONTAL: continua dentro do prédio, não existe uma parede, entulho ou fogo na posição desejada.
+% SALTOS: continua dentro do prédio, tem entulho na posição adjacente, não tem nenhum objeto na posição seguinte. 
+% VERTICAL: continua dentro do prédio, existe uma escada na posição desejada (em [X, Y] para subir e em [X, Y - 1] para descer).
+% PEGA EXTINTOR: se a carga esta vazia e tem extintor na posição atual
+% APAGAR INCENDIO: se tem carga, e existe fogo na posição adjacente
+
+
 % Movimento horizontal à direita
-s([[X, Y|Carga], Extintores, Incendios], [[X1, Y|Carga], Extintores, Incendios]) :- X1 is X + 1, dentro_predio([X1, Y]), not(ocupado_com([X1, Y], parede)), not(ocupado_com([X1, Y], entulho)), not(tem_fogo([X1, Y], Incendios)).
+s([[X, Y|Carga], Extintores, Incendios], [[X1, Y|Carga], Extintores, Incendios]) :- 
+    X1 is X + 1, 
+    dentro_predio([X1, Y]), 
+    not(ocupado_com([X1, Y], parede)), 
+    not(ocupado_com([X1, Y], entulho)), 
+    not(pertence([X1, Y], Incendios)).
 
 % Movimento horizontal à esquerda
-s([[X, Y|Carga], Extintores, Incendios], [[X1, Y|Carga], Extintores, Incendios]) :- X1 is X - 1, dentro_predio([X1, Y]), not(ocupado_com([X1, Y], parede)), not(ocupado_com([X1, Y], entulho)), not(tem_fogo([X1, Y], Incendios)).
+s([[X, Y|Carga], Extintores, Incendios], [[X1, Y|Carga], Extintores, Incendios]) :- 
+    X1 is X - 1, 
+    dentro_predio([X1, Y]), 
+    not(ocupado_com([X1, Y], parede)), 
+    not(ocupado_com([X1, Y], entulho)), 
+    not(pertence([X1, Y], Incendios)).
 
-
-% SALTOS: continua dentro do prédio, tem entulho na posição adjacente, não tem nenhum objeto na posição seguinte. 
 % Salto à direita
-s([[X, Y|Carga], Extintores, Incendios], [[X1, Y|Carga], Extintores, Incendios]) :- X1 is X + 2, X2 is X + 1, dentro_predio([X1, Y]), ocupado_com([X2, Y], entulho),
-not(ocupado_com([X1, Y], _)), not(tem_fogo([X1, Y], Incendios)), not(tem_extintor([X1, Y], Extintores)), not(ocupado_com([X1, Y - 1], escada)).
+s([[X, Y|Carga], Extintores, Incendios], [[X1, Y|Carga], Extintores, Incendios]) :- 
+    X1 is X + 2, X2 is X + 1, 
+    dentro_predio([X1, Y]), 
+    ocupado_com([X2, Y], entulho), 
+    not(ocupado_com([X1, Y], _)), 
+    not(pertence([X1, Y], Incendios)), 
+    not(pertence([X1, Y], Extintores)), 
+    not(ocupado_com([X1, Y - 1], escada)).
 
 % Salto à esquerda
-s([[X, Y|Carga], Extintores, Incendios], [[X1, Y|Carga], Extintores, Incendios]) :- X1 is X - 2, X2 is X - 1, dentro_predio([X1, Y]), ocupado_com([X2, Y], entulho),
-not(ocupado_com([X1, Y], _)), not(tem_fogo([X1, Y], Incendios)), not(tem_extintor([X1, Y], Extintores)), not(ocupado_com([X1, Y - 1], escada)).
+s([[X, Y|Carga], Extintores, Incendios], [[X1, Y|Carga], Extintores, Incendios]) :- 
+    X1 is X - 2, X2 is X - 1, 
+    dentro_predio([X1, Y]), 
+    ocupado_com([X2, Y], entulho),
+    not(ocupado_com([X1, Y], _)), 
+    not(pertence([X1, Y], Incendios)), 
+    not(pertence([X1, Y], Extintores)), 
+    not(ocupado_com([X1, Y - 1], escada)).
 
-
-% VERTICAL: continua dentro do prédio, existe uma escada na posição desejada (em [X, Y] para subir e em [X, Y - 1] para descer).
 % Movimento vertical para cima
-s([[X, Y|Carga], Extintores, Incendios], [[X, Y1|Carga], Extintores, Incendios]) :- Y1 is Y + 1, dentro_predio([X, Y1]), ocupado_com([X, Y], escada).
+s([[X, Y|Carga], Extintores, Incendios], [[X, Y1|Carga], Extintores, Incendios]) :- 
+    Y1 is Y + 1, 
+    dentro_predio([X, Y1]), 
+    ocupado_com([X, Y], escada).
 
 % Movimento vertical para baixo
-s([[X, Y|Carga], Extintores, Incendios], [[X, Y1|Carga], Extintores, Incendios]) :- Y1 is Y - 1, dentro_predio([X, Y1]), ocupado_com([X, Y1], escada).
+s([[X, Y|Carga], Extintores, Incendios], [[X, Y1|Carga], Extintores, Incendios]) :- 
+    Y1 is Y - 1, 
+    dentro_predio([X, Y1]), 
+    ocupado_com([X, Y1], escada).
 
-
-% PEGA EXXTINTOR: se a carga esta vazia e tem extintor na posição atual
 % Pega extintor
-s([[X, Y, Carga|Cauda], Extintores, Incendios], [[X, Y, Carga1|Cauda], Extintores1, Incendios]) :- Carga == 0, tem_extintor([X, Y], Extintores), retirar_elemento([X, Y], Extintores, Extintores1), Carga1 is Carga + 2.
+s([[X, Y, Carga|Cauda], Extintores, Incendios], [[X, Y, Carga1|Cauda], Extintores1, Incendios]) :- 
+    Carga == 0, 
+    pertence([X, Y], Extintores), 
+    retirar_elemento([X, Y], Extintores, Extintores1), 
+    Carga1 is Carga + 2.
 
-
-% APAGAR INCENDIO: se tem carga, e existe fogo na posição adjacente
 % Apaga Incêndio à direita
-s([[X, Y, Carga|Cauda], Extintores, Incendios], [[X, Y, Carga1|Cauda], Extintores, Incendios1]) :- Carga > 0, X1 is X + 1, tem_fogo([X1, Y], Incendios), retirar_elemento([X1, Y], Incendios, Incendios1), Carga1 is Carga - 1.
+s([[X, Y, Carga|Cauda], Extintores, Incendios], [[X, Y, Carga1|Cauda], Extintores, Incendios1]) :- 
+    Carga > 0, X1 is X + 1, 
+    pertence([X1, Y], Incendios), 
+    retirar_elemento([X1, Y], Incendios, Incendios1), 
+    Carga1 is Carga - 1.
 
 % Apaga Incêndio à esquerda
-s([[X, Y, Carga|Cauda], Extintores, Incendios], [[X, Y, Carga1|Cauda], Extintores, Incendios1]) :- Carga > 0, X1 is X - 1, tem_fogo([X1, Y], Incendios), retirar_elemento([X1, Y], Incendios, Incendios1), Carga1 is Carga - 1.
+s([[X, Y, Carga|Cauda], Extintores, Incendios], [[X, Y, Carga1|Cauda], Extintores, Incendios1]) :- 
+    Carga > 0, X1 is X - 1, 
+    pertence([X1, Y], Incendios), 
+    retirar_elemento([X1, Y], Incendios, Incendios1), 
+    Carga1 is Carga - 1.
 
 % Definindo meta(Estado)
 % Estado é meta se lista de incendios == []
 meta([_, _, []]).
+
 
 % --- Funções auxiliares para manipulação de listas ---
 pertence(Elem,[Elem|_ ]).
@@ -66,9 +100,10 @@ conta([ _|Cauda], N) :- conta(Cauda, N1), N is N1 + 1.
 inverte([], []).
 inverte([Elem|Cauda], Inv) :- inverte(Cauda, Cauda1), concatena(Cauda1, [Elem], Inv).
 
-% Função que deixax somente o caminho do bombeiro e o histórico de cargas na resposta
+% Função que deixa somente o caminho do bombeiro e o histórico de cargas na resposta final
 limpa_sol([], []).
 limpa_sol([[Elem|_]|Cauda], [Elem|Cauda1]) :- limpa_sol(Cauda, Cauda1).
+
 
 % --- BFS ---
 % Solucao por busca em largura (bl)
@@ -86,6 +121,7 @@ estende([Estado|Caminho], ListaSucessores):- bagof([Sucessor, Estado|Caminho], (
 
 % 2.2. Se o estado não tiver sucessor, falha e não procura mais (corte)
 estende( _ ,[]).
+
 
 % --- DFS ---
 % Solucao por busca em profundidade (bp)

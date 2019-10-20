@@ -1,4 +1,6 @@
-% Teste do ambiente 1: solucao_bl([[1, 1, 0],[[2, 3]],[[9, 1], [10, 5]]], S).
+% Teste do ambiente 1: 
+% solucao_bl([ Bombeiro, Extintores, Incendios ])
+% solucao_bl([ [1, 1, 0], [ [2, 3] ], [ [9, 1], [10, 5] ] ], S).
 
 % Definindo tamanho do prédio
 % tam_predio([10, 5]).
@@ -15,8 +17,8 @@ ocupado_com([4, 4], entulho).
 ocupado_com([7, 4], entulho).
 ocupado_com([6, 5], entulho).
 
-% Mapeando escadas no ambiente
-% Acho q é possível mapear somente uma escada, para subir, e fazer a verificação de que, se houver uma escada em [X, Y - 1], pode descer.
+% Mapeando escadas no ambiente (é apenas a parte de baixo, para descer é preciso
+% verificar se existe uma escada em [X, Y-1])
 ocupado_com([5, 1], escada).
 ocupado_com([9, 2], escada).
 ocupado_com([1, 3], escada).
