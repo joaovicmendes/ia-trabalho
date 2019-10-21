@@ -23,8 +23,8 @@ ocupado_com([6, 5], entulho).
 ocupado_com([4, 1], escada).
 ocupado_com([9, 1], escada).
 ocupado_com([1, 2], escada).
-ocupado_com([7, 3], escada).
+ocupado_com([7, 2], escada).
 ocupado_com([4, 3], escada).
-ocupado_com([10,4], escada).
+ocupado_com([10,3], escada).
 ocupado_com([3, 4], escada).
 ocupado_com([9, 4], escada).
