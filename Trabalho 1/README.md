@@ -5,7 +5,7 @@ Trabalho 1 da disciplina Inteligência Artificial (1001336) - UFSCar 2019/2
 O grupo é composto pelos alunos:
 - [João Victor Mendes Freire (758943)](https://github.com/joaovicmendes)
 - [Guilherme Locca Salomão (758569)](https://github.com/Caotichazard)
-- [Luis Felipe Ortolan ()](https://github.com/LuisFelipeOrtolan)
+- [Luis Felipe Ortolan (759375)](https://github.com/LuisFelipeOrtolan)
 
 # Instruções
 - Vá para a pasta `src/` no terminal.
