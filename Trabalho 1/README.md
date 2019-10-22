@@ -9,9 +9,12 @@ O grupo é composto pelos alunos:
 
 # Instruções
 - Vá para a pasta `src/` no terminal.
+- Primeira forma:
 - Executar o comando `swipl` no terminal.
-- Executar `?- [amb<num ambiente>, projeto].`, já dentro do prolog.
-- Executar `?- solucao_bl(<estado inicial>).`, já dentro do prolog.
-- Ou então, executar o comando `swipl < <num ambiente>.in` no terminal.
-- Se a solução resultante for `false`, o programa não encontrou uma solução, se encontrou e acabou com `...`, basta apertar `w` para exibir a solução completa.
+- Executar no prolog `?- [ambX, projeto].`, em que X é o número do ambiente.
+- Executar no prolog `?- solucao_bl(<estado inicial>).`, em que X é o número do ambiente.
+- Segunda forma:
+- Executar no terminal `swipl < X.in`, em que X é o número do ambiente.
+
+- Se a solução resultante for `false.`, o programa não encontrou uma solução, se encontrou e acabou com `...`, basta apertar `w` para exibir a solução completa.
 - A solução final é uma lista contendo diversas listas na forma `[X, Y, Cargas]`, onde `X` e `Y` são a posição do bombeiro e `Cargas` é o número de cargas que ele possui naquele momento.
