@@ -10,14 +10,12 @@ O grupo é composto pelos alunos:
 # Instruções
 - Vá para a pasta `src/` no terminal
 
-
-- Primeira forma:
+Primeira forma:
 - Executar no terminal `swipl`
 - Executar no prolog `?- [ambX, projeto].`, em que X é o número do ambiente
 - Executar no prolog `?- solucao_bl(<estado inicial>).`
 
-
-- Segunda forma:
+Segunda forma:
 - Executar no terminal `swipl < X.in`, em que X é o número do ambiente
 
 
